@@ -1,0 +1,15 @@
+[submodule "external/fltk"]
+	path = external/fltk
+	url = https://github.com/fltk/fltk.git
+[submodule "external/philslib"]
+	path = external/philslib
+	url = https://github.com/CppPhil/philslib.git
+[submodule "external/genann"]
+	path = external/genann
+	url = https://github.com/codeplea/genann.git
+[submodule "external/expected"]
+	path = external/expected
+	url = https://github.com/TartanLlama/expected.git
+[submodule "external/fmtlib"]
+	path = external/fmtlib
+	url = https://github.com/fmtlib/fmt.git
