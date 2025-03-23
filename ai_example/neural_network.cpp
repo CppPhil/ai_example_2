@@ -35,7 +35,6 @@ NeuralNetwork::NeuralNetwork(
   , m_learningRate{learningRate}
   , m_genann{nullptr}
 {
-  // Data members remain zero-initialized.
   const std::string filePath{findFile(fileName).string()};
   File              file{filePath.c_str(), "rb"};
   genann* const     genann{genann_read(file.get())};
