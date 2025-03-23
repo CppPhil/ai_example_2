@@ -1,6 +1,8 @@
 ﻿#include <cstdio>
 #include <cstdlib>
 
+#include <string>
+
 #include <fmt/format.h>
 
 #include <FL/Fl_Double_Window.H>
@@ -27,14 +29,23 @@
 int main(int argc, char* argv[])
 {
   try {
+    const std::string trainingImagesFilePath{
+      aie::trainingImagesFilePath().string()};
+    const std::string trainingLabelsFilePath{
+      aie::trainingLabelsFilePath().string()};
+    const std::string testingImagesFilePath{
+      aie::testingImagesFilePath().string()};
+    const std::string testingLabelsFilePath{
+      aie::testingLabelsFilePath().string()};
+
     const aie::IdxFile trainingImagesIdxFile{
-      aie::IdxFile::create(aie::trainingImagesFilePath)};
+      aie::IdxFile::create(trainingImagesFilePath)};
     const aie::IdxFile trainingLabelsIdxFile{
-      aie::IdxFile::create(aie::trainingLabelsFilePath)};
+      aie::IdxFile::create(trainingLabelsFilePath)};
     const aie::IdxFile testingImagesIdxFile{
-      aie::IdxFile::create(aie::testingImagesFilePath)};
+      aie::IdxFile::create(testingImagesFilePath)};
     const aie::IdxFile testingLabelsIdxFile{
-      aie::IdxFile::create(aie::testingLabelsFilePath)};
+      aie::IdxFile::create(testingLabelsFilePath)};
 
     const std::vector<std::uint32_t>& testingImageDimensions{
       testingImagesIdxFile.dimensions()};
