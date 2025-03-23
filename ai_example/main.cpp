@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
       aie::IdxFile::create(aie::testingImagesFilePath)};
     const aie::IdxFile testingLabelsIdxFile{
       aie::IdxFile::create(aie::testingLabelsFilePath)};
+
     const std::vector<std::uint32_t>& testingImageDimensions{
       testingImagesIdxFile.dimensions()};
     const std::uint32_t testingImageCount{testingImageDimensions.at(0)};
@@ -62,6 +63,7 @@ int main(int argc, char* argv[])
       aie::outputLayerNeuronCount,
       aie::learningRate};
 
+    // TODO: HERE
     const std::uint32_t trainingImageCount{
       aie::imageCount(trainingImagesIdxFile)};
     const std::uint32_t trainingImageByteSize{

@@ -2,10 +2,10 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <vector>
-#include <string_view>
 #include <iosfwd>
 #include <stdexcept>
+#include <string_view>
+#include <vector>
 
 namespace aie {
 enum class Type : std::uint8_t {
