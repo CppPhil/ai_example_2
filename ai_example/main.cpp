@@ -26,6 +26,39 @@
 #include "neural_network_constants.hpp"
 #include "table.hpp"
 
+namespace aie {
+namespace {
+NeuralNetwork createNeuralNetwork(
+  const aie::IdxFile& trainingImagesIdxFile,
+  bool*               isTrainingRequired)
+{
+  try {
+    *isTrainingRequired = false;
+    NeuralNetwork network{
+      neuralNetworkFileName,
+      static_cast<int>(aie::imageSizeFrom(trainingImagesIdxFile)),
+      aie::hiddenLayerCount,
+      aie::hiddenLayerNeuronCount,
+      aie::outputLayerNeuronCount,
+      aie::learningRate};
+    fmt::print(
+      "Neural network loaded from file \"{}\".\n", neuralNetworkFileName);
+    return network;
+  }
+  catch ([[maybe_unused]] const std::domain_error& exception) {
+    // File not found, create a new neural network.
+    *isTrainingRequired = true;
+    return aie::NeuralNetwork{
+      static_cast<int>(aie::imageSizeFrom(trainingImagesIdxFile)),
+      aie::hiddenLayerCount,
+      aie::hiddenLayerNeuronCount,
+      aie::outputLayerNeuronCount,
+      aie::learningRate};
+  }
+}
+} // anonymous namespace
+} // namespace aie
+
 int main(int argc, char* argv[])
 {
   try {
@@ -67,45 +100,45 @@ int main(int argc, char* argv[])
     const std::vector<std::byte>& testingLabelsBytes{
       aie::extractLabels(testingLabelsIdxFile)};
 
+    bool               isTrainingRequired{false};
     aie::NeuralNetwork neuralNetwork{
-      static_cast<int>(aie::imageSizeFrom(trainingImagesIdxFile)),
-      aie::hiddenLayerCount,
-      aie::hiddenLayerNeuronCount,
-      aie::outputLayerNeuronCount,
-      aie::learningRate};
+      aie::createNeuralNetwork(trainingImagesIdxFile, &isTrainingRequired)};
 
-    // TODO: HERE
-    const std::uint32_t trainingImageCount{
-      aie::imageCount(trainingImagesIdxFile)};
-    const std::uint32_t trainingImageByteSize{
-      aie::imageSizeFrom(trainingImagesIdxFile)};
+    if (isTrainingRequired) {
+      const std::uint32_t trainingImageCount{
+        aie::imageCount(trainingImagesIdxFile)};
+      const std::uint32_t trainingImageByteSize{
+        aie::imageSizeFrom(trainingImagesIdxFile)};
 
-    fmt::print("Starting training ...\n");
-    for (int counter{0}; counter < aie::trainingCycles; ++counter) {
-      for (std::uint32_t i{0}; i < trainingImageCount; ++i) {
-        const std::vector<std::byte> currentImage{
-          aie::extractImage(trainingImageBytes, i, trainingImageByteSize)};
-        const std::vector<double> input{aie::asDoubleVector(currentImage)};
-        const std::byte           expectedLabel{trainingLabelsBytes.at(i)};
-        const std::vector<double> labelVector{
-          aie::asDoubleVector(expectedLabel)};
+      fmt::print("Starting training ...\n");
+      for (int counter{0}; counter < aie::trainingCycles; ++counter) {
+        for (std::uint32_t i{0}; i < trainingImageCount; ++i) {
+          const std::vector<std::byte> currentImage{
+            aie::extractImage(trainingImageBytes, i, trainingImageByteSize)};
+          const std::vector<double> input{aie::asDoubleVector(currentImage)};
+          const std::byte           expectedLabel{trainingLabelsBytes.at(i)};
+          const std::vector<double> labelVector{
+            aie::asDoubleVector(expectedLabel)};
 
-        if (
-          neuralNetwork.train(input, labelVector)
-          != aie::NeuralNetwork::Error::NoError) {
-          PL_THROW_WITH_SOURCE_INFO(std::domain_error, "network.train failed!");
+          if (
+            neuralNetwork.train(input, labelVector)
+            != aie::NeuralNetwork::Error::NoError) {
+            PL_THROW_WITH_SOURCE_INFO(
+              std::domain_error, "network.train failed!");
+          }
+
+          fmt::print(
+            "Training cycle {} / {} image {:>{}} / {}\r",
+            counter + aie::oneBasedOffset,
+            aie::trainingCycles,
+            i + aie::oneBasedOffset,
+            aie::numberWidth,
+            trainingImageCount);
         }
-
-        fmt::print(
-          "Training cycle {} / {} image {:>{}} / {}\r",
-          counter + aie::oneBasedOffset,
-          aie::trainingCycles,
-          i + aie::oneBasedOffset,
-          aie::numberWidth,
-          trainingImageCount);
       }
-    }
-    fmt::print("{:<30}\n", "Finished training.");
+      fmt::print("{:<30}\n", "Finished training.");
+      neuralNetwork.saveToFile(aie::neuralNetworkFileName);
+    } // if (isTrainingRequired)
 
     std::vector<std::size_t> calculatedLabels{};
     calculatedLabels.reserve(testingImageCount);

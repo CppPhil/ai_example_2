@@ -23,7 +23,8 @@ set(APP_HEADERS
     size.hpp
     table.hpp
     collect_images.hpp
-    invert_grayscale_image.hpp)
+    invert_grayscale_image.hpp
+    file.hpp)
 
 set(APP_SOURCES
     main.cpp
@@ -41,7 +42,8 @@ set(APP_SOURCES
     gui_constants.cpp
     table.cpp
     invert_grayscale_image.cpp
-    collect_images.cpp)
+    collect_images.cpp
+    file.cpp)
 
 add_executable(${APP_NAME} ${APP_HEADERS} ${APP_SOURCES})
 

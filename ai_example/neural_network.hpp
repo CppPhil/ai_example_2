@@ -1,4 +1,6 @@
 #pragma once
+#include <filesystem>
+#include <string_view>
 #include <vector>
 
 #include <genann.h>
@@ -21,7 +23,21 @@ public:
     int    outputs,
     double learningRate);
 
+  NeuralNetwork(
+    std::string_view fileName,
+    int              inputs,
+    int              hiddenLayers,
+    int              hidden,
+    int              outputs,
+    double           learningRate);
+
+  NeuralNetwork(NeuralNetwork&& other) noexcept;
+
+  NeuralNetwork& operator=(NeuralNetwork&& other) noexcept;
+
   ~NeuralNetwork();
+
+  void saveToFile(const std::filesystem::path& path) const;
 
   // backpropagation
   Error train(

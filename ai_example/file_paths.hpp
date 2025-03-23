@@ -5,12 +5,19 @@
 namespace aie {
 inline constexpr std::string_view trainingImagesFileName{
   "train-images.idx3-ubyte"};
+
 inline constexpr std::string_view trainingLabelsFileName{
   "train-labels.idx1-ubyte"};
+
 inline constexpr std::string_view testingImagesFileName{
   "t10k-images.idx3-ubyte"};
+
 inline constexpr std::string_view testingLabelsFileName{
   "t10k-labels.idx1-ubyte"};
+
+inline constexpr std::string_view neuralNetworkFileName{"neural_network.dat"};
+
+std::filesystem::path findFile(std::string_view fileName);
 
 std::filesystem::path trainingImagesFilePath();
 
